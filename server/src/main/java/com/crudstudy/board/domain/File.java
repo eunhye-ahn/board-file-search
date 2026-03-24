@@ -1,12 +1,9 @@
 package com.crudstudy.board.domain;
 
+import com.crudstudy.board.domain.base.Base;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
-import java.time.LocalDateTime;
 
 /**
  * Table: file
@@ -21,10 +18,10 @@ import java.time.LocalDateTime;
  */
 
 @Entity
+@Table(name = "file")
 @Getter
 @NoArgsConstructor
-@EntityListeners(AuditingEntityListener.class)
-public class File {
+public class File extends Base {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -44,8 +41,4 @@ public class File {
 
     @Column(nullable = false, name="file_size")
     private Long fileSize;
-
-    @Column(nullable = false, name="created_at")
-    @CreatedDate
-    private LocalDateTime createdAt;
 }

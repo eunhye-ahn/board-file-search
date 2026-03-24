@@ -1,17 +1,14 @@
 package com.crudstudy.board.domain;
 
+import com.crudstudy.board.domain.base.BaseTime;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 
 /**
- * noargs => jpa가 접근하기위해
- * getter => 메서드에서 활용하기위해 = 정보은닉
  * creationTimestamp vs createdDate (스프링 친화적 but 설정필요) => @EntityListeners
  */
 
@@ -20,7 +17,7 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
-public class Post {
+public class Post extends BaseTime {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -39,12 +36,4 @@ public class Post {
 
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
-
-    @Column(name="created_at", nullable = false)
-    @CreatedDate
-    private LocalDateTime createdAt;
-
-    @Column(name = "updated_at", nullable = false)
-    @LastModifiedDate
-    private LocalDateTime updatedAt;
 }
