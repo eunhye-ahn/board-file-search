@@ -39,4 +39,13 @@ public class Post extends BaseTime {
 
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
+
+    public void delete(){
+        isDeleted = true;
+        deletedAt = LocalDateTime.now();
+    }
+    public void update(String title, String content){
+        title = this.getTitle();
+        content = this.getContent();
+    }
 }

@@ -4,6 +4,8 @@ import com.crudstudy.board.domain.File;
 import com.crudstudy.board.domain.Post;
 import com.crudstudy.board.dto.FileUploadResult;
 import com.crudstudy.board.dto.PostRequestDto;
+import com.crudstudy.board.exception.CustomException;
+import com.crudstudy.board.exception.ErrorCode;
 import com.crudstudy.board.repository.FileRepository;
 import com.crudstudy.board.storage.FileStorage;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * 파일 업로드/삭제 비즈니스 로직 처리 (저장하기 전)
@@ -59,6 +62,27 @@ public class FileService {
                 .fileSize(file.getSize())
                 .build();
         fileRepository.save(fileEntity);
+    }
 
+    //POST 삭제 시 -> 연관 파일 하드딜리트
+    public void deleteAllFile(Post post){
+        List<File> files = fileRepository.findByPost(post);
+        if(files != null && !files.isEmpty()){
+            for(File file : files){
+                fileStorage.delete(file.getStoredName());
+            }
+        }
+        fileRepository.deleteByPost(post);
+    }
+
+    public void deleteSelectedFile(List<Long> fileIds){
+        if(fileIds != null && !fileIds.isEmpty()){
+            for(Long fileId : fileIds){
+                File selectedFile = fileRepository.findById(fileId)
+                        .orElseThrow(() -> new CustomException(ErrorCode.FILE_NOT_FOUND));
+                fileStorage.delete(selectedFile.getStoredName());
+            }
+            fileRepository.deleteAllByIdIn(fileIds);
+        }
     }
 }

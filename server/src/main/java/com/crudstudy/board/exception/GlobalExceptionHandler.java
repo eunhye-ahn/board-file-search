@@ -18,9 +18,11 @@ public class GlobalExceptionHandler {
                 ));
     }
 
+    //CustomException 외 예외는 다 500으로 처리
+    //해결 -> 자주쓰는 예외는 따로 잡아주기
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleException(Exception e) {
-//        e.printStackTrace();
+        e.printStackTrace();
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new ErrorResponse(
                         500,

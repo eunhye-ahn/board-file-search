@@ -59,7 +59,12 @@ public class LocalFileStorage implements FileStorage {
 
     @Override
     public void delete(String filename) {
-
+        Path filePath = Paths.get(uploadDir,filename);
+        try{
+            Files.deleteIfExists(filePath);
+        }catch(IOException e){ //파일 시스템 권한이 없을 때 발생
+            throw new CustomException(ErrorCode.FILE_DELETE_FAILED);
+        }
     }
 
     @Override

@@ -2,6 +2,9 @@ package com.crudstudy.board.service;
 
 import com.crudstudy.board.domain.Post;
 import com.crudstudy.board.dto.PostRequestDto;
+import com.crudstudy.board.dto.PostUpdateRequestDto;
+import com.crudstudy.board.exception.CustomException;
+import com.crudstudy.board.exception.ErrorCode;
 import com.crudstudy.board.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -37,8 +40,41 @@ public class PostService {
         return post;
     }
 
-    //글수정
-    public void edit(PostRequestDto request){
+    /**
+     * 파일 : 하드딜리트
+     * 글 : 소프트딜리트
+     *
+     * 소프트딜리트는 도메인 클래스의 메서드로 제어
+     * => Dirty Checking (변경 감지)
+     *      : JPA가 트랜잭션 안에서 엔티티 변경을
+     *          자동으로 감지해서 UPDATE 쿼리를 날려주는 기능
+     */
+    //글삭제
+    @Transactional
+    public void delete(Long postId) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(()-> new CustomException(ErrorCode.POST_NOT_FOUND));
 
+        //같은 postId 쓰는 파일 하드딜리트
+        fileService.deleteAllFile(post);
+
+        //소프트 딜리트 > 더티체킹으로 db 자동 update
+        post.delete();
+    }
+
+    //글수정
+    @Transactional
+    public void updatePost(Long postId, PostUpdateRequestDto request, List<MultipartFile> files) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(()-> new CustomException(ErrorCode.POST_NOT_FOUND));
+
+        //글수정
+        post.update(request.getTitle(), request.getContent());
+
+        //뉴파일 추가 - 더티체킹
+        fileService.uploadFiles(post,files);
+
+        //삭제파일아이디로 파일 삭제 - 더티체킹
+        fileService.deleteSelectedFile(request.getDeleteFileIds());
     }
 }
