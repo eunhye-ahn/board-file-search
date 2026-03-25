@@ -2,6 +2,8 @@ package com.crudstudy.board.domain;
 
 import com.crudstudy.board.domain.base.BaseTime;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -16,7 +18,8 @@ import java.time.LocalDateTime;
 @Table(name = "post")
 @Getter
 @NoArgsConstructor
-@EntityListeners(AuditingEntityListener.class)
+@Builder
+@AllArgsConstructor
 public class Post extends BaseTime {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

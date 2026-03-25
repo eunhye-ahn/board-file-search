@@ -2,6 +2,8 @@ package com.crudstudy.board.domain;
 
 import com.crudstudy.board.domain.base.Base;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -21,6 +23,8 @@ import lombok.NoArgsConstructor;
 @Table(name = "file")
 @Getter
 @NoArgsConstructor
+@Builder
+@AllArgsConstructor
 public class File extends Base {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

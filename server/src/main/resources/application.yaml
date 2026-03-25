@@ -12,3 +12,5 @@ spring:
     show-sql: true
     hibernate:
       ddl-auto: none
+file:
+  upload-dir: ${FILE_UPLOAD_DIR}
