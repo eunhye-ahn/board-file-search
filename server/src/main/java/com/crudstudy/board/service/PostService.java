@@ -1,14 +1,15 @@
 package com.crudstudy.board.service;
 
 import com.crudstudy.board.domain.Post;
-import com.crudstudy.board.dto.FileDetailResponseDto;
-import com.crudstudy.board.dto.PostDetailResponseDto;
-import com.crudstudy.board.dto.PostRequestDto;
-import com.crudstudy.board.dto.PostUpdateRequestDto;
+import com.crudstudy.board.dto.*;
 import com.crudstudy.board.exception.CustomException;
 import com.crudstudy.board.exception.ErrorCode;
 import com.crudstudy.board.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -92,5 +93,41 @@ public class PostService {
         System.out.println("createdAt:"+post.getCreatedAt()); //jpa가 못읽어옴
         return new PostDetailResponseDto(post.getTitle(), post.getContent(),
                 files, post.getCreatedAt());
+    }
+
+    /**
+     * [WHAT] 게시글 목록 페이징 조회
+     * offset 방식 : page(몇번째 페이지) * size(한 페이지당 개수)로 시작 위치 계산
+     *
+     * [WHY] 전체 데이터를 한번에 조회하면 성능 저하
+     *      페이징으로 필요한 만큼만 조회
+     *
+     * [흐름]
+     * 1. 클라이언트가 page, size 파라미터로 요청
+     *      GET /api/posts?page=0&size=10
+     *          ↓
+     * 2. PageRequest.of(page, size, sort) 로 Pageable 객체 생성
+     *      - page : 0부터 시작
+     *      - size : 한페이지당 기준
+     *      - sort : 정렬기준
+     *          ↓
+     * 3. JPA가 Pageable 받아서 자동으로 offset 쿼리 생성
+     *      SELECT * FROM post ORDER BY created_at DESC LIMIT 10 OFFSET 0
+     *          ↓
+     * 4. Page<Post> → map()으로 PostListResponseDto 변환
+     *          ↓
+     * 5. Page 객체 반환 (content, totalPages, totalElements 등 포함)
+     */
+    //글 목록조회
+    public Page<PostListResponseDto> getPostList(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+
+        return postRepository.findAll(pageable) //pageable 조건으로 post목록조회
+                .map(post -> new PostListResponseDto(
+                        post.getTitle(),
+                        post.getCreatedAt(),
+                        post.getViewCount(),
+                        fileService.getFileDownload(post.getId())
+                ));
     }
 }

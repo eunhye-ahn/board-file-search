@@ -3,6 +3,7 @@ package com.crudstudy.board.service;
 import com.crudstudy.board.domain.File;
 import com.crudstudy.board.dto.FileDetailResponseDto;
 import com.crudstudy.board.domain.Post;
+import com.crudstudy.board.dto.FileDownloadResponseDto;
 import com.crudstudy.board.dto.FileUploadResult;
 import com.crudstudy.board.exception.CustomException;
 import com.crudstudy.board.exception.ErrorCode;
@@ -106,6 +107,16 @@ public class FileService {
                         file.getFileSize(),
                         file.getContentType()
                         ))
+                .toList();
+    }
+
+    //포스트 목록조회용
+    public List<FileDownloadResponseDto> getFileDownload(Long postId){
+        return fileRepository.findByPostId(postId)
+                .stream()
+                .map(file -> new FileDownloadResponseDto(
+                        file.getId()
+                ))
                 .toList();
     }
 }

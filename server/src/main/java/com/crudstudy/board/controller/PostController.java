@@ -7,6 +7,8 @@ import com.crudstudy.board.dto.PostUpdateRequestDto;
 import com.crudstudy.board.service.FileService;
 import com.crudstudy.board.service.PostService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
@@ -82,4 +84,22 @@ public class PostController {
                 .status(HttpStatus.OK)
                 .body(post);
     }
+
+    //글 전체조회(페이징)
+    @GetMapping("/api/posts")
+    public ResponseEntity<?> getAllPosts(
+            @RequestParam(defaultValue = "0") int page, //몇번째 페이지
+            @RequestParam(defaultValue = "3") int size //한 페이지에 몇개
+    ) {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(postService.getPostList(page,size));
+    }
+
+    //파일 다운로드
+    /**
+     * 로컬 파일 다운로드 흐름
+     * get 요청 > db에서 파일 경로 조회 + 서버 로컬에서 파일읽기 - 실제바이트로 읽음
+     *              > 파일 바이트 데이터로 전송 >
+     */
 }
