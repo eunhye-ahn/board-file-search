@@ -96,10 +96,4 @@ public class PostController {
                 .body(postService.getPostList(page,size));
     }
 
-    //파일 다운로드
-    /**
-     * 로컬 파일 다운로드 흐름
-     * get 요청 > db에서 파일 경로 조회 + 서버 로컬에서 파일읽기 - 실제바이트로 읽음
-     *              > 파일 바이트 데이터로 전송 >
-     */
 }

@@ -6,7 +6,8 @@ import org.springframework.core.io.Resource;
 
 @Getter
 @AllArgsConstructor
-public class FileDownloadResponseDto {
-    private String fileName;
+public class FileViewResponseDto {
     private Resource resource;
+    private String fileName;
+    private String ContentType;
 }

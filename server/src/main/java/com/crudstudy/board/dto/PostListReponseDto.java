@@ -3,14 +3,15 @@ package com.crudstudy.board.dto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
 @AllArgsConstructor
-public class PostListResponseDto {
+public class PostListReponseDto {
     private String title;
     private LocalDateTime createdAt;
     private int viewCount;
-    private List<FileDownloadResponseDto> files;
+    private List<FileByPostsListResponseDto> files;
 }

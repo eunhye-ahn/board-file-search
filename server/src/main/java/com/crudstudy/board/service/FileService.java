@@ -1,18 +1,20 @@
 package com.crudstudy.board.service;
 
 import com.crudstudy.board.domain.File;
-import com.crudstudy.board.dto.FileDetailResponseDto;
+import com.crudstudy.board.dto.*;
 import com.crudstudy.board.domain.Post;
-import com.crudstudy.board.dto.FileDownloadResponseDto;
-import com.crudstudy.board.dto.FileUploadResult;
 import com.crudstudy.board.exception.CustomException;
 import com.crudstudy.board.exception.ErrorCode;
 import com.crudstudy.board.repository.FileRepository;
 import com.crudstudy.board.storage.FileStorage;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 /**
@@ -111,12 +113,57 @@ public class FileService {
     }
 
     //포스트 목록조회용
-    public List<FileDownloadResponseDto> getFileDownload(Long postId){
+    public List<FileByPostsListResponseDto> getFileDownload(Long postId){
         return fileRepository.findByPostId(postId)
                 .stream()
-                .map(file -> new FileDownloadResponseDto(
+                .map(file -> new FileByPostsListResponseDto(
                         file.getId()
                 ))
                 .toList();
+    }
+
+    /**
+     * [WHAT] Resource : 바이트로 읽을 준비가 된 객체
+     * Resource {
+     *     boolean exists();          // 파일 존재하는지
+     *     String getFilename();      // 파일 이름
+     *     long contentLength();      // 파일 크기
+     *     InputStream getInputStream(); // ← 실제 바이트 읽는 통로
+     * }
+     *
+     * [흐름] loadFile() Resource반환 > 컨트롤러가 바디에 담아서 응답
+     *          >스프링이 리소스를 보고 getInputStream()을 호출해서 바이트로 읽음
+     *          >실제로 바이트로 읽는건 스프링이 알아서 처리
+     */
+    //파일 다운로드 - 파일 바이트 전송
+    public FileDownloadResponseDto loadFile(Long fileId){
+        //fileId로 db에서 파일 정보 조회, 없으면 예외 발생
+        File file = fileRepository.findById(fileId)
+                .orElseThrow(() -> new CustomException(ErrorCode.FILE_NOT_FOUND));
+        //조회된 파일 경로를 Path 객체로 변환 > 파일시스템에서 파일을 읽으려면
+        //Path타입 필요
+        Path filePath = Paths.get(file.getFilePath());
+
+        //Path를 리소스로 변환후반환
+        //스프링이 리소스 타입을 바이트 데이터로 읽어서 클라에게 전달할 수 있음
+        return new FileDownloadResponseDto(file.getOriginalName(), new FileSystemResource(file.getFilePath()));
+    }
+
+    /**
+     * 파일 다운로드 할때 :
+     * file의 오리지널 네임
+     * file의 path > 읽을수있도록 Path로 변환해서 전달 - Resource 객체 구현
+     * Resource : 파일을 바이트타입으로 읽어서 클라에게 전달
+     */
+
+
+    //파일 바로보기(리소스객체, 오리지널네임, 컨텐트타입)
+    public FileViewResponseDto getViewFile(Long fileId){
+        File file = fileRepository.findById(fileId)
+                .orElseThrow(() -> new CustomException(ErrorCode.FILE_NOT_FOUND));
+
+        Resource resource = new FileSystemResource(file.getFilePath());
+
+        return new FileViewResponseDto(resource, file.getOriginalName(), file.getContentType());
     }
 }
