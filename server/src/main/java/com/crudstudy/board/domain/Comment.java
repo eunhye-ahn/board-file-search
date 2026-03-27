@@ -2,6 +2,8 @@ package com.crudstudy.board.domain;
 
 import com.crudstudy.board.domain.base.BaseTime;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -29,6 +31,8 @@ import java.time.LocalDateTime;
 @Table(name = "comment")
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Comment extends BaseTime {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -46,4 +50,13 @@ public class Comment extends BaseTime {
 
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
+
+    public void deleteComment(){
+        isDeleted = true;
+        deletedAt = LocalDateTime.now();
+    }
+
+    public void updateComment(String content){
+        this.content = content;
+    }
 }

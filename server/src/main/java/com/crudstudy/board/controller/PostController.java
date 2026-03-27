@@ -88,12 +88,11 @@ public class PostController {
     //글 전체조회(페이징)
     @GetMapping("/api/posts")
     public ResponseEntity<?> getAllPosts(
-            @RequestParam(defaultValue = "0") int page, //몇번째 페이지
-            @RequestParam(defaultValue = "3") int size //한 페이지에 몇개
+            @RequestParam(defaultValue = "0") int page //몇번째 페이지
     ) {
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(postService.getPostList(page,size));
+                .body(postService.getPostList(page));
     }
 
 }

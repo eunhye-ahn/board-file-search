@@ -45,7 +45,10 @@ public class LocalFileStorage implements FileStorage {
         Path filePath = dirPath.resolve(storedName);
 
 
-        //디스크에 파일저장
+        //디스크에 파일저장(
+        // Files.copy가 내부적으로 스트림을 열고 닫아줌 
+        //  -> 그래서 따로 try-with-resource를 안써도됨
+        // )
         try {
             Files.copy(file.getInputStream(), filePath);
         }catch(IOException e){

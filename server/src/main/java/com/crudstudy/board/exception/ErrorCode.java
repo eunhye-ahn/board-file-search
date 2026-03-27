@@ -16,7 +16,10 @@ public enum ErrorCode {
     FILE_SIZE_EXCEEDED(HttpStatus.BAD_REQUEST,           "파일 크기가 초과되었습니다."),
 
     //post
-    POST_NOT_FOUND(HttpStatus.NOT_FOUND,                 "포스트를 찾을 수 없습니다.");
+    POST_NOT_FOUND(HttpStatus.NOT_FOUND,                 "포스트를 찾을 수 없습니다."),
+
+    //comment
+    COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND,                "댓글을 찾을 수 없습니다");
 
     private final HttpStatus status;
     private final String message;
