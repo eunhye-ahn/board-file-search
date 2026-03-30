@@ -50,6 +50,6 @@ public class File extends Base {
     private Long fileSize;
 
     //바로보기 시 브라우저가 파일을 어떻게 렌더링할지 결정
-    @Column(nullable = false, name="content_type")
-    private String contentType;
+    @Column(nullable = false, name="resource_type")
+    private String resourceType;
 }

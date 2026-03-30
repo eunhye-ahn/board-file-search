@@ -57,12 +57,13 @@ public class LocalFileStorage implements FileStorage {
         }
 
         String filePathStr = filePath.toString();
+        String resourceType = file.getContentType();
 
-        return new FileUploadResult(storedName, filePathStr);
+        return new FileUploadResult(storedName, filePathStr, resourceType);
     }
 
     @Override
-    public void delete(String filename) {
+    public void delete(String filename, String resourceType) {
         Path filePath = Paths.get(uploadDir,filename);
         try{
             Files.deleteIfExists(filePath);

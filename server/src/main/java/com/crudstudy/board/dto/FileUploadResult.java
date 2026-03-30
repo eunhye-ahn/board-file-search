@@ -8,4 +8,5 @@ import lombok.Getter;
 public class FileUploadResult {
     private String storedName;
     private String filePath;
+    private String resourceType;
 }

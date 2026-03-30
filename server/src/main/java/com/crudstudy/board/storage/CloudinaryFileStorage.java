@@ -41,17 +41,32 @@ public class CloudinaryFileStorage implements FileStorage {
 
             String publicId = result.get("public_id").toString();
             String secureUrl = result.get("secure_url").toString();
+            String resourceType = result.get("resource_type").toString();
 
-            return new FileUploadResult(publicId, secureUrl);
+            return new FileUploadResult(publicId, secureUrl,resourceType);
 
         } catch (IOException e) {
             throw new CustomException(ErrorCode.FILE_UPLOAD_FAILED);
         }
     }
 
+    /**
+     *
+     * @param filename : 로컬구현체에서 삭제할때 url로 접근하여서 통일하여
+     *                  클라우디너리 내부에서는 public_id로 사용
+     */
     @Override
-    public void delete(String filename) {
-
+    public void delete(String filename,String resourceType) {
+        try{
+            Map result = cloudinary.uploader().destroy(filename, ObjectUtils.asMap("resource_type", resourceType));
+            System.out.println(filename);
+            System.out.println(result);
+            if(!"ok".equals(result.get("result"))){
+                throw new CustomException(ErrorCode.FILE_DELETE_FAILED);
+            }
+        }catch(IOException e){
+            throw new CustomException(ErrorCode.FILE_DELETE_FAILED);
+        }
     }
 
     @Override

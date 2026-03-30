@@ -16,6 +16,6 @@ import org.springframework.web.multipart.MultipartFile;
  */
 public interface FileStorage {
     FileUploadResult save(MultipartFile file);
-    void delete(String filename);
+    void delete(String filename, String resourceType);
     String getUrl(String filename);
 }

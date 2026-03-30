@@ -60,10 +60,10 @@ public class FileService {
         File fileEntity = File.builder()
                 .post(post)
                 .originalName(file.getOriginalFilename())
-                .storedName(result.getStoredName())
-                .filePath(result.getFilePath())
+                .storedName(result.getStoredName()) //public_id
+                .filePath(result.getFilePath())     //secure_url
                 .fileSize(file.getSize())
-                .contentType(file.getContentType())
+                .resourceType(result.getResourceType())
                 .build();
         fileRepository.save(fileEntity);
     }
@@ -81,7 +81,7 @@ public class FileService {
         List<File> files = fileRepository.findByPostId(postId);
         if(files != null && !files.isEmpty()){
             for(File file : files){
-                fileStorage.delete(file.getStoredName());
+                fileStorage.delete(file.getStoredName(),file.getResourceType());
             }
         }
         fileRepository.deleteByPostId(postId);
@@ -92,7 +92,7 @@ public class FileService {
             for(Long fileId : fileIds){
                 File selectedFile = fileRepository.findById(fileId)
                         .orElseThrow(() -> new CustomException(ErrorCode.FILE_NOT_FOUND));
-                fileStorage.delete(selectedFile.getStoredName());
+                fileStorage.delete(selectedFile.getStoredName(), selectedFile.getResourceType());
             }
             fileRepository.deleteAllByIdIn(fileIds);
         }
@@ -107,7 +107,7 @@ public class FileService {
                         file.getOriginalName(),
                         file.getFilePath(),
                         file.getFileSize(),
-                        file.getContentType()
+                        file.getResourceType()
                         ))
                 .toList();
     }
@@ -164,6 +164,6 @@ public class FileService {
 
         Resource resource = new FileSystemResource(file.getFilePath());
 
-        return new FileViewResponseDto(resource, file.getOriginalName(), file.getContentType());
+        return new FileViewResponseDto(resource, file.getOriginalName(), file.getResourceType());
     }
 }
