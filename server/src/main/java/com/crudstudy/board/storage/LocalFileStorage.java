@@ -5,6 +5,7 @@ import com.crudstudy.board.dto.FileUploadResult;
 import com.crudstudy.board.exception.CustomException;
 import com.crudstudy.board.exception.ErrorCode;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,7 +19,7 @@ import java.util.UUID;
  * 서버시작 > 스프링이 자동으로 @Component 붙은 애들을 다 객체로 만들어서
  *              컨테이너에 보관
  */
-
+@Profile("local")
 @Component
 public class LocalFileStorage implements FileStorage {
 
@@ -46,7 +47,7 @@ public class LocalFileStorage implements FileStorage {
 
 
         //디스크에 파일저장(
-        // Files.copy가 내부적으로 스트림을 열고 닫아줌 
+        // Files.copy가 내부적으로 스트림을 열고 닫아줌
         //  -> 그래서 따로 try-with-resource를 안써도됨
         // )
         try {
