@@ -170,11 +170,11 @@ public class FileService {
 //        Resource resource = ((LocalFileStorage)fileStorage).getResource(file.getFilePath());
         if(fileStorage instanceof LocalFileStorage localFileStorage){
             Resource resource = localFileStorage.getResource(file.getFilePath());
-            return new FileViewResponseDto(resource, file.getOriginalName(), file.getResourceType());
+            return new FileViewResponseDto(file.getId(), resource, file.getOriginalName(), file.getResourceType());
         }
         if(fileStorage instanceof CloudinaryFileStorage cloudinaryFileStorage){
             String url = cloudinaryFileStorage.getUrl(file.getFilePath());
-            return new FileViewResponseDto(url, file.getOriginalName(), file.getResourceType());
+            return new FileViewResponseDto(file.getId(), url, file.getOriginalName(), file.getResourceType());
         }
         throw new CustomException(ErrorCode.FILE_NOT_FOUND);
     }

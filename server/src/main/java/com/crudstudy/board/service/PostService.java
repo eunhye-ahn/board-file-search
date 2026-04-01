@@ -120,15 +120,18 @@ public class PostService {
      * 5. Page 객체 반환 (content, totalPages, totalElements 등 포함)
      */
     //글 목록조회
-    public Page<PostListReponseDto> getPostList(int page) {
-        Pageable pageable = PageRequest.of(page, 3, Sort.by("createdAt").descending());
+    public PostPageResponseDto getPostList(int page) {
+        Pageable pageable = PageRequest.of(page-1, 3, Sort.by("createdAt").descending());
 
-        return postRepository.findAll(pageable) //pageable 조건으로 post목록조회
+        Page<PostListReponseDto> result = postRepository.findAll(pageable) //pageable 조건으로 post목록조회
                 .map(post -> new PostListReponseDto(
+                        post.getId(),
                         post.getTitle(),
                         post.getCreatedAt(),
                         post.getViewCount(),
                         fileService.getFileDownload(post.getId())
                 ));
+
+        return new PostPageResponseDto(result);
     }
 }

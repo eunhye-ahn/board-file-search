@@ -2,6 +2,7 @@ package com.crudstudy.board.service;
 
 import com.crudstudy.board.domain.Comment;
 import com.crudstudy.board.domain.Post;
+import com.crudstudy.board.dto.CommentRequestDto;
 import com.crudstudy.board.dto.CommentResponseDto;
 import com.crudstudy.board.exception.CustomException;
 import com.crudstudy.board.exception.ErrorCode;

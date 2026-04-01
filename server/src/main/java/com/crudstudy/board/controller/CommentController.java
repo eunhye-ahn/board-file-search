@@ -1,5 +1,6 @@
 package com.crudstudy.board.controller;
 
+import com.crudstudy.board.dto.CommentRequestDto;
 import com.crudstudy.board.dto.CommentResponseDto;
 import com.crudstudy.board.service.CommentService;
 import lombok.RequiredArgsConstructor;
@@ -16,8 +17,8 @@ public class CommentController {
 
     @PostMapping("/api/posts/{postId}/comments")
     public ResponseEntity<?> addComment(@PathVariable Long postId,
-                                        @RequestBody String content) {
-        commentService.saveComment(postId, content);
+                                        @RequestBody CommentRequestDto request) {
+        commentService.saveComment(postId, request.getContent());
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .build();
@@ -33,8 +34,8 @@ public class CommentController {
     //댓글수정
     @PutMapping("/api/comments/{commentId}")
     public ResponseEntity<?> updateComment(@PathVariable Long commentId,
-                                           @RequestBody String content) {
-        commentService.updateComment(commentId, content);
+                                           @RequestBody  CommentRequestDto request) {
+        commentService.updateComment(commentId, request.getContent());
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .build();

@@ -1,12 +1,11 @@
 package com.crudstudy.board.controller;
 
 import com.crudstudy.board.domain.Post;
-import com.crudstudy.board.dto.PostDetailResponseDto;
-import com.crudstudy.board.dto.PostRequestDto;
-import com.crudstudy.board.dto.PostUpdateRequestDto;
+import com.crudstudy.board.dto.*;
 import com.crudstudy.board.service.FileService;
 import com.crudstudy.board.service.PostService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -88,11 +87,11 @@ public class PostController {
     //글 전체조회(페이징)
     @GetMapping("/api/posts")
     public ResponseEntity<?> getAllPosts(
-            @RequestParam(defaultValue = "0") int page //몇번째 페이지
+            @RequestParam(defaultValue = "1") int page //클라에서 보내는
     ) {
+        PostPageResponseDto result = postService.getPostList(page);
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(postService.getPostList(page));
+                .body(result);
     }
-
 }

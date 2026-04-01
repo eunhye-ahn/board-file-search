@@ -10,6 +10,7 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 public class PostListReponseDto {
+    private Long postId;
     private String title;
     private LocalDateTime createdAt;
     private int viewCount;
