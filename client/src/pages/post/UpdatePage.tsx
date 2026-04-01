@@ -1,7 +1,7 @@
 import { useNavigate, useParams } from "react-router-dom"
-import { getPost, updatePost } from "../api/apis/postApi";
+import { getPost, updatePost } from "../../api/apis/postApi";
 import { useEffect, useState } from "react";
-import type { PostDetailResponse, PostUpdateRequest } from "../types/Post";
+import type { PostDetailResponse, PostUpdateRequest } from "../../types/Post";
 
 /**
  * 
@@ -20,6 +20,13 @@ export interface PostUpdateRequest {
 
  */
 
+/**
+ * 문제1 : defaultValue는 초기값만 설정되고 리액트가 이후 변경을 추적안함
+ * 
+ * 문제2 : File[] 에 object 넣으려고 하면 타입 에러 발생 > 근데 왜런타임중에?
+ * 
+ */
+
 export const UpdatePage = () => {
     const [data, setData] = useState<PostDetailResponse | null>(null);
     const [loading, setLoading] = useState(true);
@@ -36,10 +43,18 @@ export const UpdatePage = () => {
 
     const postIdNum = Number(postId);
 
+    //상세데이터 중복 코드 => 리팩토링 고려
     useEffect(() => {
         if (!postId) return;
         getPost(postIdNum)
-            .then(res => setData(res.data))
+            .then(res => {
+                setData(res.data)
+                setForm({
+                    title: res.data.title,
+                    content: res.data.content,
+                    deleteFileIds: []
+                })
+            })
             .finally(() => setLoading(false));
     }, [postIdNum]);
 
@@ -51,6 +66,8 @@ export const UpdatePage = () => {
     const handleUpdate = () => {
         updatePost(postIdNum, form, files)
             .then(() => navigate(`/posts/${postIdNum}`))
+            .finally(() =>
+                console.log(form))
     };
 
     return (
@@ -66,7 +83,8 @@ export const UpdatePage = () => {
                         <tr>
                             <th>제목</th>
                             <td>
-                                <input type="text" defaultValue={data.title} />
+                                <input type="text" value={form.title}
+                                    onChange={(e) => setForm(prev => ({ ...prev, title: e.target.value }))} />
                             </td>
                         </tr>
                         <tr>
@@ -77,17 +95,30 @@ export const UpdatePage = () => {
                         </tr>
                         <tr>
                             <th>등록일</th>
-                            <td>{ }</td>
+                            <td>{data.createdAt}</td>
                         </tr>
                         <tr>
                             <th>내용</th>
                             <td>
-                                <textarea />
+                                <textarea value={form.content}
+                                    onChange={(e) => setForm(prev => ({ ...prev, content: e.target.value }))} />
                             </td>
                         </tr>
                         <tr>
                             <th>첨부파일</th>
-                            <td></td>
+                            <td>
+                                {data.files?.map(file => (
+                                    <div key={file.fileId}>
+                                        <span>{file.fileName}</span>
+                                        <button>삭제</button>
+                                    </div>
+                                ))}
+                                {/* <input type="file" multiple onChange={(e) => setFiles(prev => ({ ...prev, file: e.target.value }))} /> */}
+                                <input type="file" multiple
+                                    onChange={(e) => {
+                                        if (e.target.files) setFiles(Array.from(e.target.files))
+                                    }} />
+                            </td>
                         </tr>
                     </tbody>
                 </table>

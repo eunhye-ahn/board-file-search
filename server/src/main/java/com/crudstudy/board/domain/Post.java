@@ -51,8 +51,8 @@ public class Post extends BaseTime {
         deletedAt = LocalDateTime.now();
     }
     public void update(String title, String content){
-        title = this.getTitle();
-        content = this.getContent();
+        this.title = title;
+        this.content = content;
     }
     public void increaseViewCount(){
         viewCount++;

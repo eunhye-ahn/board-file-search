@@ -21,6 +21,7 @@ import java.util.List;
 public class PostService {
     private final PostRepository postRepository;
     private final FileService fileService;
+    private final CommentService commentService;
 
     /**
      * [WHY] PostService 안에서 FileService를 호출처리하는 이유
@@ -32,7 +33,7 @@ public class PostService {
      */
     //글작성
     @Transactional
-    public void save(PostRequestDto request, List<MultipartFile> files) {
+    public PostCreateResponseDto save(PostRequestDto request, List<MultipartFile> files) {
         //글 저장
         Post post = Post.builder()
                 .title(request.getTitle())
@@ -40,6 +41,8 @@ public class PostService {
                 .build();
         postRepository.save(post);
         fileService.uploadFiles(post,files);
+
+        return new PostCreateResponseDto(post.getId());
     }
 
     /**
@@ -89,6 +92,7 @@ public class PostService {
         post.increaseViewCount();
         //파일서비스 호출
         List<FileDetailResponseDto> files = fileService.getFilesByPost(post.getId());
+
         //dto에 담기
         System.out.println("updatedAt:"+post.getUpdatedAt());
         System.out.println("createdAt:"+post.getCreatedAt()); //jpa가 못읽어옴

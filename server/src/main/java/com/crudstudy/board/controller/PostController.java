@@ -41,10 +41,10 @@ public class PostController {
             @RequestPart PostRequestDto request,
             @RequestPart(required = false) List<MultipartFile> files
             ) {
-        postService.save(request,files);
+        PostCreateResponseDto result = postService.save(request,files);
         return ResponseEntity.
                 status(HttpStatus.CREATED)
-                .build();
+                .body(result);
     }
 
     //글삭제
@@ -66,6 +66,9 @@ public class PostController {
     public ResponseEntity<?> updatePost(@PathVariable Long postId,
                                         @RequestPart PostUpdateRequestDto request,
                                         @RequestPart(required = false) List<MultipartFile> files){
+        System.out.println("title:" + request.getTitle());
+        System.out.println("content:" + request.getContent());
+
         postService.updatePost(postId,request,files);
 
         return ResponseEntity

@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react"
-import { getPost } from "../api/apis/postApi";
+import { getPost } from "../../api/apis/postApi";
 import { useNavigate, useParams } from "react-router-dom";
-import type { PostDetailResponse } from "../types/Post";
-import type { FileDetailResponse } from "../types/File";
-import { viewFile } from "../api/apis/fileApi";
+import type { PostDetailResponse } from "../../types/Post";
+import { viewFile } from "../../api/apis/fileApi";
+import { CommentSection } from "../comment/CommentSection";
 
 export const PostPage = () => {
     const { postId } = useParams<{ postId: string }>();
@@ -30,6 +30,8 @@ export const PostPage = () => {
             .then(res => setData(res.data))
             .finally(() => setLoading(false));
     }, [postIdNum]);
+
+
 
     if (!postId) return <div>잘못된 접근입니다</div>;
     if (loading) return <div>로딩중...</div>
@@ -71,6 +73,8 @@ export const PostPage = () => {
                     </tr>
                 </tbody>
             </table>
+            {/*댓글목록*/}
+            <CommentSection postId={postIdNum} />
         </div>
     )
 }

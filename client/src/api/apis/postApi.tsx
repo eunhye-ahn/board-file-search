@@ -10,9 +10,13 @@ import api from "../axiosInstance";
  */
 export const createPost = (data: PostCreateRequest, files?: File[]) => {
     const formData = new FormData();
-    formData.append("request", new Blob([JSON.stringify(data)], { type: "application.json" }));
+    formData.append("request", new Blob([JSON.stringify(data)], { type: "application/json" }));
     files?.forEach(file => formData.append("files", file));
-    return api.post("/api/posts", formData);
+    return api.post("/api/posts", formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data'  // ← 명시적
+        }
+    });
 }
 /**
  * [WHAT] FormData : 파일 + 데이터 함께 서버로 전송
@@ -35,9 +39,13 @@ export const deletePost = (postId: number) => {
 
 export const updatePost = (postId: number, data: PostUpdateRequest, files?: File[]) => {
     const formData = new FormData();
-    formData.append("request", new Blob([JSON.stringify(data)], { type: "application.json" }));
+    formData.append("request", new Blob([JSON.stringify(data)], { type: "application/json" }));
     files?.forEach(file => formData.append("files", file));
-    return api.put(`/api/posts/${postId}`, formData);
+    return api.put(`/api/posts/${postId}`, formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data'  // ← 명시적
+        }
+    });
 }
 
 export const getPost = (postId: number) => {

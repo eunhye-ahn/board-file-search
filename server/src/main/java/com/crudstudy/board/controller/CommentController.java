@@ -4,6 +4,7 @@ import com.crudstudy.board.dto.CommentRequestDto;
 import com.crudstudy.board.dto.CommentResponseDto;
 import com.crudstudy.board.service.CommentService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -43,9 +44,9 @@ public class CommentController {
     //해당 글 댓글조회(페이징)
     //
     @GetMapping("/api/posts/{postId}/comments")
-    public ResponseEntity<?> getCommentsByPost(@RequestParam(defaultValue = "0") int page,
+    public ResponseEntity<?> getCommentsByPost(@RequestParam(defaultValue = "1") int page,
             @PathVariable Long postId) {
-        List<CommentResponseDto> result = commentService.getComments(page, postId);
+        Page<CommentResponseDto> result = commentService.getComments(page, postId);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(result);

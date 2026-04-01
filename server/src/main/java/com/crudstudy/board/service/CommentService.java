@@ -58,13 +58,12 @@ public class CommentService {
         //업데이트
         comment.updateComment(content);
     }
-    public List<CommentResponseDto> getComments(int page, Long postId) {
-        Pageable pageable = PageRequest.of(page, 3, Sort.by("createdAt").descending());
+    public Page<CommentResponseDto> getComments(int page, Long postId) {
+        Pageable pageable = PageRequest.of(page-1, 3, Sort.by("createdAt").descending());
         Post post = postRepository.findById(postId)
                 .orElseThrow(()->new CustomException(ErrorCode.POST_NOT_FOUND));
-        Page<Comment> comments = commentRepository.findByPost(post, pageable);
-        return comments.map(comment -> new CommentResponseDto(comment.getContent(),comment.getCreatedAt()))
-                .toList();
+        return commentRepository.findByPost(post, pageable)
+                .map(comment -> new CommentResponseDto(comment.getId(),comment.getContent(),comment.getCreatedAt()));
     }
     /**
      * stream>map

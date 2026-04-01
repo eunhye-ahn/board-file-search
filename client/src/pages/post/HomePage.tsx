@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
-import { getAllPosts } from "../api/apis/postApi";
-import type { PostListResponse } from "../types/Post";
-import { downloadFile } from "../api/apis/fileApi";
+import { getAllPosts } from "../../api/apis/postApi";
+import type { PostListResponse } from "../../types/Post";
+import { downloadFile } from "../../api/apis/fileApi";
 import { useNavigate } from "react-router-dom";
 /*
 export interface PostListResponse {
