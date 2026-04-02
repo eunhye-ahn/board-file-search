@@ -16,5 +16,5 @@ public abstract class Base {
     @Column(nullable = false, name="created_at")
     @CreatedDate
     protected LocalDateTime createdAt;
-//    private LocalDateTime createdAt;
+//    private LocalDateTime createdAt; : 보충필요 protected
 }
