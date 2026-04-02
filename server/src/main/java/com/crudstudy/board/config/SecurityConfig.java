@@ -39,9 +39,9 @@ public class SecurityConfig {
                 .httpBasic(httpBasic ->httpBasic.disable())
 
                 //세션제어(중복로그인 시 기존 세션 만료)
-                .sessionManagement(session -> session
-                        .maximumSessions(1)
-                        .expiredUrl("/login?expired"))
+//                .sessionManagement(session -> session
+//                        .maximumSessions(1)
+//                        .expiredUrl("/login?expired"))
 
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/login","/api/register").permitAll()
@@ -56,8 +56,8 @@ public class SecurityConfig {
 
         config.setAllowedOrigins(List.of("http://localhost:5173"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
-        config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
+        config.setAllowedHeaders(List.of("*"));
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);

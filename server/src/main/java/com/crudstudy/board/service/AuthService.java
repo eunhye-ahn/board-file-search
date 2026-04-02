@@ -3,6 +3,7 @@ package com.crudstudy.board.service;
 import com.crudstudy.board.dto.LoginRequestDto;
 import com.crudstudy.board.exception.CustomException;
 import com.crudstudy.board.exception.ErrorCode;
+import jakarta.servlet.ServletRequest;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -17,6 +18,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PostMapping;
 
@@ -25,9 +27,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 public class AuthService {
 
     private final AuthenticationManager authenticationManager;
+    private final ServletRequest servletRequest;
 
     //login
-    public void login(LoginRequestDto request) {
+    public void login(LoginRequestDto request, HttpServletRequest servletRequest) {
         //인증처리(UserDetailsService가 DB에서 유저 조회 + 비밀번호 대조)
         try {
             Authentication auth = authenticationManager.authenticate(
@@ -38,6 +41,14 @@ public class AuthService {
             );
             //securityContext에 저장
             SecurityContextHolder.getContext().setAuthentication(auth);
+
+            //세션생성
+            HttpSession session = servletRequest.getSession(true);
+            session.setAttribute(
+                    HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
+                    SecurityContextHolder.getContext()
+            );
+
         } catch (BadCredentialsException e){
             throw new CustomException(ErrorCode.INVALID_CREDENTIALS);
         } catch (UsernameNotFoundException e){

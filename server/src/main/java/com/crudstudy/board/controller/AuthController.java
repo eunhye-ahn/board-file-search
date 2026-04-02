@@ -46,9 +46,10 @@ public class AuthController {
     private final AuthService authService;
     //login
     @PostMapping("/api/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequestDto request) {
+    public ResponseEntity<?> login(@RequestBody LoginRequestDto request,
+                                   HttpServletRequest httpServletRequest) {
         //인증처리 서비스
-        authService.login(request);
+        authService.login(request, httpServletRequest);
         
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -56,9 +57,12 @@ public class AuthController {
     }
     //logout
     @PostMapping("/api/logout")
-    public ResponseEntity<?> logout(@AuthenticationPrincipal UserDetails user, HttpServletResponse response) {
-        //쿠키삭제+서버에세션삭제
-        authService.logout(user, response);
+    public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
+        //쿠키삭제+서버세션삭제
+        authService.logout(request, response);
         //리턴 ok
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .build();
     }
 }
