@@ -25,7 +25,7 @@ export interface PostDetailResponse {
 //목록
 export interface PostListResponse {
     content: PostItem[], //게시글 목록
-    totalPage: number,  //페이지버튼 1-totalPages 만들기
+    totalPages: number,  //페이지버튼 1-totalPages 만들기
     first: boolean, //처음버튼
     last: boolean,  //마지막버튼
     number: number //현재페이지

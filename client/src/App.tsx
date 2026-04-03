@@ -4,7 +4,7 @@ import { PostPage } from "./pages/post/PostPage"
 import { UpdatePage } from "./pages/post/UpdatePage"
 import { UploadPage } from "./pages/post/UploadPage"
 import { LoginPage } from "./pages/auth/LoginPage"
-import { RegisterPage } from "./pages/user/registerPage"
+import { RegisterPage } from "./pages/user/RegisterPage"
 
 function App() {
 

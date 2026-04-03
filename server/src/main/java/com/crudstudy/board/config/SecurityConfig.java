@@ -1,5 +1,9 @@
 package com.crudstudy.board.config;
 
+import com.crudstudy.board.oauth2.CustomOAuth2UserService;
+import com.crudstudy.board.oauth2.OAuth2SuccessHandler;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -28,7 +32,11 @@ import java.util.List;
  */
 
 @Configuration
+@RequiredArgsConstructor
 public class SecurityConfig {
+    private final CustomOAuth2UserService customOAuth2UserService;
+    private final OAuth2SuccessHandler oAuth2SuccessHandler;
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -44,9 +52,28 @@ public class SecurityConfig {
 //                        .expiredUrl("/login?expired"))
 
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/login","/api/register").permitAll()
+                        .requestMatchers("/api/login","/api/register","/oauth2/**", "/login/oauth2/code/**",
+                                "/favicon.ico").permitAll()
                         .anyRequest().authenticated()
-        );
+                )
+
+                .oauth2Login(oauth2->oauth2
+                        .userInfoEndpoint(userInfo->userInfo
+                                .userService(customOAuth2UserService))
+                        .defaultSuccessUrl("http://localhost:5173/",true)
+                )
+
+                /**
+                 * [WHAT] 인증 안 된 요청 -> 401 반환처리
+                 * [WHY] security는 ssr시절에 만든거라 인증없는요청은 HTML 로그인페이지로 리다이렉트되도록 설정
+                 *      -> 요즘은 restapi+react로 분리되어있어서 프론트가 다른서버에 있어서 cors에러 발생
+                 * : 프론트의 응답인터셉터 활용해서 처리할 것
+                 */
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint((request, response, authExcception)->{
+                            response.sendError(HttpServletResponse.SC_UNAUTHORIZED); //401반환
+                        })
+                );
         return http.build();
     }
 

@@ -12,23 +12,36 @@ export interface PostListResponse {
     last: boolean,  //마지막버튼
     number: number //현재페이지
 }
-
-export interface PostItem {
-    title: string,
-    createdAt: string,
-    viewCount: number
-}
 */
 
 export const HomePage = () => {
+    /**
+     * pageable은 0-based
+     * 클라는 1-based
+     * 서버에서 클라에서 받은 page에 -1을 하여 계산처리
+     */
     const [page, setPage] = useState(1);
+    const GROUP_SIZE = 10;
     const [data, setData] = useState<PostListResponse | null>(null);
     const navigate = useNavigate();
 
     useEffect(() => {
         getAllPosts(page).then(res => setData(res.data))
-        console.log(data);
     }, [page]);
+
+    //api 비동기 대비 if문처리
+    const pageNumbers = [];
+    let currentGroup = 0;
+    if (data) {
+        currentGroup = Math.floor((page - 1) / GROUP_SIZE); //그룹나누기 0~시작
+        const groupStart = currentGroup * GROUP_SIZE + 1; //l_based
+        const groupEnd = Math.min(groupStart + GROUP_SIZE - 1, data.totalPages);
+        for (let i = groupStart; i <= groupEnd; i++) {
+            pageNumbers.push(i);
+
+        }
+    }
+    //Array.from 으로 배열만들기 가능 <- 보충공부
 
     const handleLogout = () => {
         logout()
@@ -74,13 +87,21 @@ export const HomePage = () => {
                 </tbody>
             </table>
             <div>
-                <button>처음</button>
-                <button>이전 10</button> {/* 이전 10페이지 */}
-                <button>1</button>
-                <button>2</button>
-                <button>3</button>
-                <button>다음 10</button> {/* 다음 10페이지 */}
-                <button>마지막</button>
+                {data && (
+                    <>
+                        <button onClick={() => setPage(1)} disabled={data.first}>처음</button>
+                        <button onClick={() => setPage(Math.max(1, (currentGroup - 1) * GROUP_SIZE + 1))}
+                            disabled={currentGroup === 0}>이전 10</button> {/* 이전 10페이지 */}
+                        {pageNumbers.map(p => (
+                            <button key={p} onClick={() => setPage(p)}>
+                                {p}
+                            </button>
+                        ))}
+                        <button onClick={() => setPage((currentGroup + 1) * GROUP_SIZE + 1)}
+                            disabled={currentGroup === Math.floor((data.totalPages - 1) / GROUP_SIZE)}>다음 10</button> {/* 다음 10페이지 */}
+                        <button onClick={() => setPage(data.totalPages)} disabled={data.last}>마지막</button>
+                    </>
+                )}
             </div>
         </div>
     )

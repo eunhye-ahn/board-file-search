@@ -29,6 +29,7 @@ export const LoginPage = () => {
                         onChange={(e) => setForm((prev) => ({ ...prev, password: e.target.value }))} />
                 </form>
                 <button onClick={handleLogin}>Login</button>
+                <button onClick={() => window.location.href = " http://localhost:8080/oauth2/authorization/google"}>google 로그인</button>
             </div>
         </div>
     )
