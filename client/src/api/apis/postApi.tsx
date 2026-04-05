@@ -1,5 +1,5 @@
 
-import type { PostCreateRequest, PostUpdateRequest } from "../../types/Post";
+import type { PostCreateRequest, PostSearchParams, PostUpdateRequest } from "../../types/Post";
 import api from "../axiosInstance";
 
 /**
@@ -55,5 +55,11 @@ export const getPost = (postId: number) => {
 export const getAllPosts = (page: number) => {
     return api.get("/api/posts", {
         params: { page }  //쿼리파라미터로 자동변환
+    })
+}
+
+export const SearchPost = (data: PostSearchParams, page: number) => {
+    return api.get("api/posts/search", {
+        params: { ...data, page }
     })
 }

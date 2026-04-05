@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -144,6 +145,23 @@ public class PostService {
                         fileService.getFileDownload(post.getId())
                 ));
 
+        return new PostPageResponseDto(result);
+    }
+
+    public PostPageResponseDto search(String keyword, String type,
+                                      LocalDateTime startDate,
+                                      LocalDateTime endDate,
+                                      int page){
+        Pageable pageable = PageRequest.of(page-1,3,Sort.by("createdAt").descending());
+        Page<PostListReponseDto> result = postRepository.search(keyword, type, startDate, endDate, pageable)
+                .map(post -> new PostListReponseDto(
+                        post.getId(),
+                        post.getTitle(),
+                        post.getUser().getName(),
+                        post.getCreatedAt(),
+                        post.getViewCount(),
+                        fileService.getFileDownload(post.getId())
+                ));
         return new PostPageResponseDto(result);
     }
 }

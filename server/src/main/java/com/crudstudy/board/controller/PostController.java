@@ -19,6 +19,7 @@ import org.springframework.security.web.context.HttpSessionSecurityContextReposi
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -102,6 +103,21 @@ public class PostController {
             @RequestParam(defaultValue = "1") int page //클라에서 보내는
     ) {
         PostPageResponseDto result = postService.getPostList(page);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(result);
+    }
+
+    //포스트 검색조회
+    @GetMapping("/api/posts/search")
+    public ResponseEntity<?> searchPost(
+            @RequestParam(defaultValue = "") String keyword,
+            @RequestParam(defaultValue = "titleContent") String type,
+            @RequestParam(required = false) LocalDateTime startDate,
+            @RequestParam(required = false) LocalDateTime endDate,
+            @RequestParam(defaultValue = "1") int page
+            ){
+        PostPageResponseDto result = postService.search(keyword,type,startDate,endDate,page);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(result);

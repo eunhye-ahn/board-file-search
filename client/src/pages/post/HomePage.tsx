@@ -1,18 +1,10 @@
 import { useEffect, useState } from "react"
-import { getAllPosts } from "../../api/apis/postApi";
-import type { PostListResponse } from "../../types/Post";
+import { SearchPost } from "../../api/apis/postApi";
+import { type PostSearchParams, type PostListResponse } from "../../types/Post";
 import { downloadFile } from "../../api/apis/fileApi";
 import { useNavigate } from "react-router-dom";
 import { logout } from "../../api/apis/authApi";
-/*
-export interface PostListResponse {
-    content: PostItem[], //게시글 목록
-    totalPage: number,  //페이지버튼 1-totalPages 만들기
-    first: boolean, //처음버튼
-    last: boolean,  //마지막버튼
-    number: number //현재페이지
-}
-*/
+import { SearchBar } from "./SearchBar";
 
 export const HomePage = () => {
     /**
@@ -24,10 +16,12 @@ export const HomePage = () => {
     const GROUP_SIZE = 10;
     const [data, setData] = useState<PostListResponse | null>(null);
     const navigate = useNavigate();
-
-    useEffect(() => {
-        getAllPosts(page).then(res => setData(res.data))
-    }, [page]);
+    const [searchParams, setSearchParams] = useState<PostSearchParams>({
+        keyword: "",
+        type: "",
+        startDate: null,
+        endDate: null
+    })
 
     //api 비동기 대비 if문처리
     const pageNumbers = [];
@@ -48,10 +42,34 @@ export const HomePage = () => {
             .then(() => navigate("/login"))
     }
 
+    useEffect(() => {
+        SearchPost({
+            ...searchParams,
+            startDate: searchParams.startDate ? searchParams.startDate + "T00:00:00" : null,
+            endDate: searchParams.endDate ? searchParams.endDate + "T23:59:59" : null,
+        }, page).then(res => setData(res.data));
+    }, [page]);
+
+    const handleSearch = () => {
+        SearchPost({
+            ...searchParams,
+            startDate: searchParams.startDate ? searchParams.startDate + "T00:00:00" : null,
+            endDate: searchParams.endDate ? searchParams.endDate + "T23:59:59" : null,
+        }, page).then(res => {
+            setData(res.data)
+            console.log(res.data)
+        });
+    };
+
     return (
         <div>
             <button onClick={handleLogout}>로그아웃</button>
             <h1>게시판</h1>
+            <SearchBar
+                searchParams={searchParams}
+                setSearchParams={setSearchParams}
+                onSearch={handleSearch}
+            />
             <button onClick={() => navigate("/posts")}>글 작성</button>
             <table>
                 <thead>
@@ -70,7 +88,7 @@ export const HomePage = () => {
                          * navigate로 이동하기
                          * 컴포넌트로 이동하기
                          */
-                        <tr onClick={() => navigate(`/posts/${post.postId}`)}>
+                        <tr key={post.postId} onClick={() => navigate(`/posts/${post.postId}`)}>
                             <td>{index + 1}</td>
                             <td>{post.title}</td>
                             <td>{post.userName}</td>
@@ -78,7 +96,7 @@ export const HomePage = () => {
                             <td>{post.viewCount}</td>
                             <td>
                                 {post.files.map(file => (
-                                    <span key={file.fileId} onClick={() => downloadFile(file.fileId)}>📎</span>
+                                    <span key={file.fileId} onClick={() => downloadFile(file.fileId)}>{file.fileId ? "📎" : "-"}</span>
                                 ))}
                             </td>
                         </tr>

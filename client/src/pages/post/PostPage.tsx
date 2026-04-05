@@ -45,7 +45,7 @@ export const PostPage = () => {
             {/*상단헤더 작성자만 보이게?? */}
             <div>
                 <div>
-                    <button onClick={() => navigate(-1)}>목록으로</button>
+                    <button onClick={() => navigate("/")}>목록으로</button>
                     <h2>게시글 상세</h2>
                 </div>
                 <div>

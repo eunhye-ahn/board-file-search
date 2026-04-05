@@ -40,3 +40,11 @@ export interface PostItem {
     viewCount: number,
     files: FileByPostsListResponse[]
 }
+
+//검색
+export interface PostSearchParams {
+    keyword: string,
+    type: string,
+    startDate: string | null,
+    endDate: string | null
+}
