@@ -16,6 +16,7 @@ export const HomePage = () => {
     const GROUP_SIZE = 10;
     const [data, setData] = useState<PostListResponse | null>(null);
     const navigate = useNavigate();
+    //home에서 state관리 - 모든 컴포넌트가 같은 값 공유하기 위해서
     const [searchParams, setSearchParams] = useState<PostSearchParams>({
         keyword: "",
         type: "",
@@ -50,6 +51,7 @@ export const HomePage = () => {
         }, page).then(res => setData(res.data));
     }, [page]);
 
+    //api호출도 홈에서 - state로 관리되는 data에 접근하기 위해서
     const handleSearch = () => {
         SearchPost({
             ...searchParams,
@@ -83,24 +85,26 @@ export const HomePage = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {data?.content.map((post, index) => (
-                        /**
-                         * navigate로 이동하기
-                         * 컴포넌트로 이동하기
-                         */
-                        <tr key={post.postId} onClick={() => navigate(`/posts/${post.postId}`)}>
-                            <td>{index + 1}</td>
-                            <td>{post.title}</td>
-                            <td>{post.userName}</td>
-                            <td>{post.createdAt}</td>
-                            <td>{post.viewCount}</td>
-                            <td>
-                                {post.files.map(file => (
-                                    <span key={file.fileId} onClick={() => downloadFile(file.fileId)}>{file.fileId ? "📎" : "-"}</span>
-                                ))}
-                            </td>
-                        </tr>
-                    )) ?? <tr>
+                    {data?.content
+                        .filter(post => !post.isDeleted)
+                        .map((post, index) => (
+                            /**
+                             * navigate로 이동하기
+                             * 컴포넌트로 이동하기
+                             */
+                            <tr key={post.postId} onClick={() => navigate(`/posts/${post.postId}`)}>
+                                <td>{index + 1}</td>
+                                <td>{post.title}</td>
+                                <td>{post.userName}</td>
+                                <td>{post.createdAt}</td>
+                                <td>{post.viewCount}</td>
+                                <td>
+                                    {post.files.map(file => (
+                                        <span key={file.fileId} onClick={() => downloadFile(file.fileId)}>{file.fileId ? "📎" : "-"}</span>
+                                    ))}
+                                </td>
+                            </tr>
+                        )) ?? <tr>
                             <td colSpan={4}>포스트가 없습니다</td>
                         </tr>
                     }

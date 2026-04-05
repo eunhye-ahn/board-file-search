@@ -38,7 +38,8 @@ export interface PostItem {
     title: string,
     createdAt: string,
     viewCount: number,
-    files: FileByPostsListResponse[]
+    files: FileByPostsListResponse[],
+    isDeleted: boolean
 }
 
 //검색

@@ -6,6 +6,7 @@ interface Props {
     onSearch: () => void
 }
 
+//props는 한 객체만 전달 가능 구조분해로 사용
 export const SearchBar = ({ searchParams, setSearchParams, onSearch }: Props) => {
     return (
         <div>

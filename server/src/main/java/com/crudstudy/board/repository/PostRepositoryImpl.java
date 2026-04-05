@@ -27,6 +27,17 @@ import java.util.List;
  *      -> 컨트롤러에 엔드포인트 추가
  */
 
+/**
+ * querydsl 비교 메서드
+ * .eq 같다
+ * .ne 다르다
+ * .gt 크다
+ * .lt 작다
+ * .goe 크거나 같다
+ * .loe 작거나 같다
+ * .isNull
+ * .contains 포함한다
+ */
 @Repository
 @RequiredArgsConstructor
 public class PostRepositoryImpl implements PostRepositoryCustom{
@@ -36,6 +47,8 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
     public Page<Post> search(String keyword, String type, LocalDateTime startDate, LocalDateTime endDate, Pageable pageable) {
         QPost post = QPost.post;
         BooleanBuilder builder = new BooleanBuilder();
+
+        builder.and(post.isDeleted.eq(false)); //eq => equals
 
         //키워드검색
         if(StringUtils.hasText(keyword)){

@@ -142,7 +142,8 @@ public class PostService {
                         post.getUser().getName(),
                         post.getCreatedAt(),
                         post.getViewCount(),
-                        fileService.getFileDownload(post.getId())
+                        fileService.getFileDownload(post.getId()),
+                        post.isDeleted()
                 ));
 
         return new PostPageResponseDto(result);
@@ -160,7 +161,8 @@ public class PostService {
                         post.getUser().getName(),
                         post.getCreatedAt(),
                         post.getViewCount(),
-                        fileService.getFileDownload(post.getId())
+                        fileService.getFileDownload(post.getId()),
+                        post.isDeleted()
                 ));
         return new PostPageResponseDto(result);
     }

@@ -11,9 +11,12 @@ export const LoginPage = () => {
     });
 
     const handleLogin = () => {
-        console.log(form)
         login(form)
             .then(() => navigate("/"))
+            .catch((err) => {
+                console.log(err.response.data)
+                alert(err.response.data.message)
+            })
     }
 
     return (

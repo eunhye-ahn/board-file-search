@@ -11,7 +11,8 @@ export const CommentSection = ({ postId }: { postId: number }) => {
 
     useEffect(() => {
         fetchComments();
-    }, [page, postId, comment]);
+        console.log()
+    }, [page, postId]);
 
     const fetchComments = () => {
         getCommentsByPost(postId, page)
@@ -27,11 +28,15 @@ export const CommentSection = ({ postId }: { postId: number }) => {
             updateComment(updateCommentId, comment)
                 .then(() => {
                     setComment({ content: "" })
-                    setUpdateCommentId(null);
+                    setUpdateCommentId(null)
+                    fetchComments()
                 })
         } else {
             addComment(postId, comment)
-                .then(() => setComment({ content: "" })) //초기화 흐름 보충 필요
+                .then(() => {
+                    setComment({ content: "" })
+                    fetchComments()
+                })
         }
     };
 
@@ -58,6 +63,7 @@ export const CommentSection = ({ postId }: { postId: number }) => {
                     .map(comment => (
                         <div key={comment.commentId}>
                             <p>{comment.content}</p>
+                            <p>{comment.createdAt.replace("T", " ")}</p>
                             <button onClick={() => { handleUpdateComment(comment) }}>수정</button>
                             <button onClick={() => { handleDeleteComment(comment) }}>삭제</button>
                         </div>

@@ -16,4 +16,5 @@ public class PostListReponseDto {
     private LocalDateTime createdAt;
     private int viewCount;
     private List<FileByPostsListResponseDto> files;
+    private Boolean isDeleted;
 }
