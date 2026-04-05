@@ -72,11 +72,11 @@ Cloudinary, S3 대비 로직이 복잡하고 서버 부하가 발생함
 
 ## 5. 페이지네이션 방식
 
-> 스프링의 Pagable 라이브러리를 이용하여 Offset 기반으로 개발
+> 스프링의 Pagable 라이브러리를 이용하여 mysql_limit 기반으로 개발
 
 ---
 
-## 5. 트러블슈팅 & 리팩토링 기록
+## 6. 트러블슈팅 & 리팩토링 기록
 
 ### 의존성 리팩토링 (File ↔ Post 순환 의존 방지)
 
@@ -138,27 +138,6 @@ UserDetailService 구현체를 안만들어서 AuthenticationManage무한 순환
 4. DB 결과 반환
 
 UserDetailServices : 인터페이스 <- 구현체 필요
-
----
-
-### StackOverflowError - AuthenticationManager 무한 순환 참조
-
-**문제**
-> 세션 로그인 추가했는데 테스트 중에 stackoverflowError 발생
-
-**원인**
-`UserDetailsService` 구현체를 만들지 않아서 Spring Security가
-`AuthenticationManager` → 기본 `UserDetailsService` → `AuthenticationManager`
-순으로 무한 순환 참조 발생
-
-**세션 Login 흐름**
-1. 로그인 요청
-2. `AuthenticationManager`가 `UserDetailsService` 호출
-3. `UserDetailsService`에서 DB 조회 후 유저 정보 반환
-4. 인증 성공 → 세션 생성 + `JSESSIONID` 쿠키 발급
-
-**해결**
-`UserDetailsService` 인터페이스 구현체 직접 생성
 
 ---
 
