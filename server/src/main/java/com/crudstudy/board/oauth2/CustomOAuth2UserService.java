@@ -2,6 +2,7 @@ package com.crudstudy.board.oauth2;
 
 import com.crudstudy.board.domain.User;
 import com.crudstudy.board.repository.UserRepository;
+import com.crudstudy.board.service.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -23,8 +24,8 @@ public class CustomOAuth2UserService implements OAuth2UserService{
 
         String email = oAuth2User.getAttribute("email");
         String name = oAuth2User.getAttribute("name");
-        System.out.println("oauth진입 : "+email+", "+name);
-        userRepository.findByEmail(email)
+
+        User user = userRepository.findByEmail(email)
                 .orElseGet(()->userRepository.save(User.builder()
                         .name(name)
                         .email(email)
@@ -33,10 +34,6 @@ public class CustomOAuth2UserService implements OAuth2UserService{
                 );
 
         //구글의 기본키는 sub인데 email을 키로 명시해주는게 좋다 보충 필요
-        return new DefaultOAuth2User(
-                oAuth2User.getAuthorities(),
-                oAuth2User.getAttributes(),
-                "email"
-        );
+        return new CustomUserDetails(user, oAuth2User.getAttributes());
     }
 }

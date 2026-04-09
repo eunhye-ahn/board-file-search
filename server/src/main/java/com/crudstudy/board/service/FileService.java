@@ -120,7 +120,8 @@ public class FileService {
         return fileRepository.findByPostId(postId)
                 .stream()
                 .map(file -> new FileByPostsListResponseDto(
-                        file.getId()
+                        file.getId(),
+                        file.getOriginalName()
                 ))
                 .toList();
     }

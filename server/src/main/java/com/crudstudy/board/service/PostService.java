@@ -134,7 +134,7 @@ public class PostService {
      */
     //글 목록조회
     public PostPageResponseDto getPostList(int page) {
-        Pageable pageable = PageRequest.of(page-1, 3, Sort.by("createdAt").descending());
+        Pageable pageable = PageRequest.of(page, 10, Sort.by("createdAt").descending());
         Page<PostListReponseDto> result = postRepository.findAll(pageable) //pageable 조건으로 post목록조회
                 .map(post -> new PostListReponseDto(
                         post.getId(),
@@ -153,7 +153,7 @@ public class PostService {
                                       LocalDateTime startDate,
                                       LocalDateTime endDate,
                                       int page){
-        Pageable pageable = PageRequest.of(page-1,3,Sort.by("createdAt").descending());
+        Pageable pageable = PageRequest.of(page,10,Sort.by("createdAt").descending());
         Page<PostListReponseDto> result = postRepository.search(keyword, type, startDate, endDate, pageable)
                 .map(post -> new PostListReponseDto(
                         post.getId(),

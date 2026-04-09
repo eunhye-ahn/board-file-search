@@ -7,8 +7,7 @@ export const UploadPage = () => {
     const navigate = useNavigate();
     const [form, setForm] = useState<PostCreateRequest>({
         title: "",
-        content: "",
-        userId: 0
+        content: ""
     });
 
     const [files, setFiles] = useState<File[]>([]);

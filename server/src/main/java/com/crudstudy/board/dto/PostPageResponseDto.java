@@ -14,6 +14,7 @@ public class PostPageResponseDto {
     private int number;
     private boolean first;
     private boolean last;
+    private int size;
 
     public PostPageResponseDto(Page<PostListReponseDto> page) {
         this.content = page.getContent();
@@ -21,5 +22,6 @@ public class PostPageResponseDto {
         this.number = page.getNumber();
         this.first = page.isFirst();
         this.last = page.isLast();
+        this.size = page.getSize();
     }
 }

@@ -49,10 +49,15 @@ public class AuthService {
                     SecurityContextHolder.getContext()
             );
 
+            System.out.println("principal 타입: " + auth.getPrincipal().getClass().getName());
+            System.out.println("principal: " + auth.getPrincipal());
+
         } catch (BadCredentialsException e){
             throw new CustomException(ErrorCode.INVALID_CREDENTIALS);
         } catch (UsernameNotFoundException e){
             throw new CustomException(ErrorCode.USER_NOT_FOUND);
+        } catch (IllegalStateException e){
+            throw new CustomException(ErrorCode.MISSING_CREDENTIALS);
         }
     }
 

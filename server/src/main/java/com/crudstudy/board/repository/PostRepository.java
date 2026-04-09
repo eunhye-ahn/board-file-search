@@ -4,6 +4,7 @@ import com.crudstudy.board.domain.Post;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -15,9 +16,13 @@ import java.util.List;
 
 public interface PostRepository extends JpaRepository<Post, Long>, PostRepositoryCustom{
     /**
-     * Spring Data JPA - Pageable
-     * [WHAT] 대용량 데이터를 잘라서 가져오는 도구
+     * Page 객체는 두가지 쿼리가 필요함 (실제 데이터조회, 전체 개수 조회)
      *
+     * querydsl 로 전체조회도 통일시켜서 미사용됨
      */
-    Page<Post> findAll(Pageable pageable);
+    @Query(
+            value = "select p from Post p join fetch p.user where p.isDeleted = false",
+            countQuery = "select count(p) from Post p where p.isDeleted=false"
+    )
+    Page<Post> findByDeletedFalse(Pageable pageable);
 }

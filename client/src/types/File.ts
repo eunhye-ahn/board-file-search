@@ -9,7 +9,8 @@ export interface FileDetailResponse {
 
 //파일정보 - 게시글 전체조회
 export interface FileByPostsListResponse {
-    fileId: number
+    fileId: number,
+    fileName: string
 };
 
 // //파일 바로보기

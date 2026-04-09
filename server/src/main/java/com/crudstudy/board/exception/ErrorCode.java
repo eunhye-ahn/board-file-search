@@ -25,7 +25,8 @@ public enum ErrorCode {
     //user
     INVALID_CREDENTIALS(HttpStatus.UNAUTHORIZED,           "이메일/비밀번호가 불일치합니다"),
     DUPLICATE_EMAIL(HttpStatus.CONFLICT, "이미 사용중인 이메일입니다"),
-    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 유저입니다");
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 유저입니다"),
+    MISSING_CREDENTIALS(HttpStatus.BAD_REQUEST,           "이메일 또는 비밀번호를 입력해주세요");
 
     private final HttpStatus status;
     private final String message;

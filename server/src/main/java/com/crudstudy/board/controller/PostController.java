@@ -2,6 +2,7 @@ package com.crudstudy.board.controller;
 
 import com.crudstudy.board.domain.Post;
 import com.crudstudy.board.dto.*;
+import com.crudstudy.board.service.CustomUserDetails;
 import com.crudstudy.board.service.FileService;
 import com.crudstudy.board.service.PostService;
 import jakarta.servlet.http.HttpSession;
@@ -13,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
@@ -43,14 +45,14 @@ public class PostController {
     //글작성
     @PostMapping(value="/api/posts", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> createPost(
-            HttpSession session,
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestPart PostRequestDto request,
             @RequestPart(required = false) List<MultipartFile> files
             ) {
-        SecurityContext context = (SecurityContext) session.getAttribute(
-                HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY
-        );
-        String email = context.getAuthentication().getName();
+//        SecurityContext context = (SecurityContext) session.getAttribute(
+//                HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY
+//        );
+        String email = userDetails.getUsername();
         PostCreateResponseDto result = postService.save(email, request,files);
         return ResponseEntity.
                 status(HttpStatus.CREATED)
@@ -76,8 +78,6 @@ public class PostController {
     public ResponseEntity<?> updatePost(@PathVariable Long postId,
                                         @RequestPart PostUpdateRequestDto request,
                                         @RequestPart(required = false) List<MultipartFile> files){
-        System.out.println("title:" + request.getTitle());
-        System.out.println("content:" + request.getContent());
 
         postService.updatePost(postId,request,files);
 
@@ -100,7 +100,7 @@ public class PostController {
     //글 전체조회(페이징)
     @GetMapping("/api/posts")
     public ResponseEntity<?> getAllPosts(
-            @RequestParam(defaultValue = "1") int page //클라에서 보내는
+            @RequestParam(defaultValue = "0") int page //클라에서 보내는
     ) {
         PostPageResponseDto result = postService.getPostList(page);
         return ResponseEntity
@@ -115,7 +115,7 @@ public class PostController {
             @RequestParam(defaultValue = "titleContent") String type,
             @RequestParam(required = false) LocalDateTime startDate,
             @RequestParam(required = false) LocalDateTime endDate,
-            @RequestParam(defaultValue = "1") int page
+            @RequestParam(defaultValue = "0") int page
             ){
         PostPageResponseDto result = postService.search(keyword,type,startDate,endDate,page);
         return ResponseEntity

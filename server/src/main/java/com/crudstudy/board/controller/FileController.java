@@ -13,6 +13,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+
 @RestController
 @RequiredArgsConstructor
 public class FileController {
@@ -42,7 +45,7 @@ public class FileController {
             //클라우디너리 리다이렉트
             return ResponseEntity
                     .status(HttpStatus.FOUND)
-                    .header(HttpHeaders.LOCATION, result.getUrl() + "?fl_attachment=true")
+                    .header(HttpHeaders.LOCATION, result.getUrl() + "?fl_attachment=true" + URLEncoder.encode(result.getFileName(), StandardCharsets.UTF_8))
                     .build();
         }
     }

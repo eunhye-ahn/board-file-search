@@ -12,8 +12,7 @@ export const HomePage = () => {
      * 클라는 1-based
      * 서버에서 클라에서 받은 page에 -1을 하여 계산처리
      */
-    const [page, setPage] = useState(1);
-    const GROUP_SIZE = 10;
+    const [page, setPage] = useState<number>(0);
     const [data, setData] = useState<PostListResponse | null>(null);
     const navigate = useNavigate();
     //home에서 state관리 - 모든 컴포넌트가 같은 값 공유하기 위해서
@@ -23,17 +22,22 @@ export const HomePage = () => {
         startDate: null,
         endDate: null
     })
+    const [openFilePostId, setOpenFilePostId] = useState<number | null>(null);
+
+    const GROUP_SIZE = 5;
 
     //api 비동기 대비 if문처리
-    const pageNumbers = [];
-    let currentGroup = 0;
+    const pageNumbers = []; //현재 그룹의 페이지 번호 배열
+    let currentGroup = 0; //현재 페이지가 속한 그룹번호
     if (data) {
-        currentGroup = Math.floor((page - 1) / GROUP_SIZE); //그룹나누기 0~시작
-        const groupStart = currentGroup * GROUP_SIZE + 1; //l_based
+        currentGroup = Math.floor((page) / GROUP_SIZE);
+        //현재그룹의 첫번째 번호
+        const groupStart = currentGroup * GROUP_SIZE;
+        //현재그룹의 마지막번호
         const groupEnd = Math.min(groupStart + GROUP_SIZE - 1, data.totalPages);
+        //groupStart ~ groupEnd 범위의 페이지 번호를 배열에 추가
         for (let i = groupStart; i <= groupEnd; i++) {
             pageNumbers.push(i);
-
         }
     }
     //Array.from 으로 배열만들기 가능 <- 보충공부
@@ -48,7 +52,9 @@ export const HomePage = () => {
             ...searchParams,
             startDate: searchParams.startDate ? searchParams.startDate + "T00:00:00" : null,
             endDate: searchParams.endDate ? searchParams.endDate + "T23:59:59" : null,
-        }, page).then(res => setData(res.data));
+        }, page).then(res => {
+            setData(res.data)
+        });
     }, [page]);
 
     //api호출도 홈에서 - state로 관리되는 data에 접근하기 위해서
@@ -93,15 +99,35 @@ export const HomePage = () => {
                              * 컴포넌트로 이동하기
                              */
                             <tr key={post.postId} onClick={() => navigate(`/posts/${post.postId}`)}>
-                                <td>{index + 1}</td>
+                                <td>{page * data.size + index + 1}</td>
                                 <td>{post.title}</td>
                                 <td>{post.userName}</td>
-                                <td>{post.createdAt}</td>
+                                <td>{post.createdAt.split("T")[0]}</td>
                                 <td>{post.viewCount}</td>
                                 <td>
-                                    {post.files.map(file => (
-                                        <span key={file.fileId} onClick={() => downloadFile(file.fileId)}>{file.fileId ? "📎" : "-"}</span>
-                                    ))}
+                                    {post.files.length > 0 ?
+                                        <span>
+                                            <span onClick={(e) => {
+                                                e.stopPropagation()
+                                                setOpenFilePostId(openFilePostId === post.postId ? null : post.postId)
+                                            }}>
+                                                📄
+                                            </span>
+                                            {openFilePostId === post.postId &&
+                                                <div>
+                                                    {post.files.map((file, index) =>
+                                                        <div key={file.fileId}
+                                                            onClick={(e) => {
+                                                                e.stopPropagation()
+                                                                downloadFile(file.fileId);
+                                                            }}>
+                                                            📄{index + 1}.{file.fileName}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            }
+                                        </span>
+                                        : ""}
                                 </td>
                             </tr>
                         )) ?? <tr>
@@ -113,17 +139,17 @@ export const HomePage = () => {
             <div>
                 {data && (
                     <>
-                        <button onClick={() => setPage(1)} disabled={data.first}>처음</button>
-                        <button onClick={() => setPage(Math.max(1, (currentGroup - 1) * GROUP_SIZE + 1))}
+                        <button onClick={() => setPage(0)} disabled={data.first}>처음</button>
+                        <button onClick={() => setPage(Math.max(1, (currentGroup - 1) * GROUP_SIZE))}
                             disabled={currentGroup === 0}>이전 10</button> {/* 이전 10페이지 */}
                         {pageNumbers.map(p => (
                             <button key={p} onClick={() => setPage(p)}>
-                                {p}
+                                {p + 1}
                             </button>
                         ))}
-                        <button onClick={() => setPage((currentGroup + 1) * GROUP_SIZE + 1)}
+                        <button onClick={() => setPage((currentGroup + 1) * GROUP_SIZE)}
                             disabled={currentGroup === Math.floor((data.totalPages - 1) / GROUP_SIZE)}>다음 10</button> {/* 다음 10페이지 */}
-                        <button onClick={() => setPage(data.totalPages)} disabled={data.last}>마지막</button>
+                        <button onClick={() => setPage(data.totalPages - 1)} disabled={data.last}>마지막</button>
                     </>
                 )}
             </div>

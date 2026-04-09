@@ -42,9 +42,11 @@ public class Post extends BaseTime {
     private User user;
 
     @Column(name="view_count")
+    @Builder.Default
     private int viewCount = 0;
 
     @Column(name="is_deleted")
+    @Builder.Default
     private boolean isDeleted = false;
 
     @Column(name = "deleted_at")

@@ -3,7 +3,7 @@ import type { commentRequest, commentResponse } from "../../types/Comment";
 import { addComment, deleteComment, getCommentsByPost, updateComment } from "../../api/apis/comment";
 
 export const CommentSection = ({ postId }: { postId: number }) => {
-    const [page, setPage] = useState(1);
+    const [page, setPage] = useState(0);
     const [loading, setLoading] = useState(true);
     const [comments, setComments] = useState<commentResponse[]>([]);
     const [comment, setComment] = useState<commentRequest>();

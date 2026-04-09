@@ -72,10 +72,12 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
             builder.and(post.createdAt.loe(endDate)); //<=
         }
 
+        builder.and(post.isDeleted.eq(false));
+
         //실제쿼리실행
         List<Post> result = queryFactory
                 .selectFrom(post)
-                .leftJoin(post.user).fetchJoin() //
+                .leftJoin(post.user).fetchJoin() //n+1문제
                 .where(builder)
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())

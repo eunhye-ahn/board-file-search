@@ -2,18 +2,21 @@ package com.crudstudy.board.service;
 
 import com.crudstudy.board.domain.Comment;
 import com.crudstudy.board.domain.Post;
+import com.crudstudy.board.domain.User;
 import com.crudstudy.board.dto.CommentRequestDto;
 import com.crudstudy.board.dto.CommentResponseDto;
 import com.crudstudy.board.exception.CustomException;
 import com.crudstudy.board.exception.ErrorCode;
 import com.crudstudy.board.repository.CommentRepository;
 import com.crudstudy.board.repository.PostRepository;
+import com.crudstudy.board.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,6 +26,7 @@ import java.util.List;
 public class CommentService {
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
+    private final UserRepository userRepository;
 
     /**
      *
@@ -31,12 +35,18 @@ public class CommentService {
      * : 그럼 삭제된 포스트인데 댓글이 존재하는 고아데이터가 존재할 수 있음
      */
     @Transactional
-    public void saveComment(Long postId, String content) {
+    public void saveComment(Long postId, String content, Long userId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(()-> new CustomException(ErrorCode.POST_NOT_FOUND));
+        //User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        //유저엔티티에 유저디테일 직접구현하면 db조회없이 바로꺼내기 가능
+        //-> 도메인객체에서 시큐리티 로직이 섞이기때문에 분리함
+        User user = userRepository.findById(userId)
+                .orElseThrow(()-> new CustomException(ErrorCode.USER_NOT_FOUND));
         Comment comment = Comment.builder()
                 .post(post)
                 .content(content)
+                .user(user)
                 .build();
         commentRepository.save(comment);
     }
@@ -58,12 +68,28 @@ public class CommentService {
         //업데이트
         comment.updateComment(content);
     }
+
     public Page<CommentResponseDto> getComments(int page, Long postId) {
-        Pageable pageable = PageRequest.of(page-1, 3, Sort.by("createdAt").descending());
+        Pageable pageable = PageRequest.of(page, 5, Sort.by("createdAt").descending());
         Post post = postRepository.findById(postId)
                 .orElseThrow(()->new CustomException(ErrorCode.POST_NOT_FOUND));
         return commentRepository.findByPostAndIsDeletedFalse(post, pageable)
-                .map(comment -> new CommentResponseDto(comment.getId(),comment.getContent(),comment.getCreatedAt()));
+                .map(comment -> new CommentResponseDto(comment.getId(),
+                        comment.getContent(),
+                        /**
+                         * n+1문제 주의
+                         * findByPostAndIsDeletedFalse() 실행
+                         * → SELECT * FROM comment WHERE post_id = 1    (1번)
+                         *     ↓
+                         * 댓글 3개 반환 [comment1, comment2, comment3]
+                         *     ↓
+                         * map()으로 순회하면서 getUser().getName() 호출
+                         * → SELECT * FROM user WHERE id = 1   (comment1의 유저)
+                         * → SELECT * FROM user WHERE id = 2   (comment2의 유저)
+                         * → SELECT * FROM user WHERE id = 3   (comment3의 유저)
+                         */
+                        comment.getUser().getName(),
+                        comment.getCreatedAt()));
     }
     /**
      * stream>map

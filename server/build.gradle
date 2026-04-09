@@ -33,6 +33,9 @@ dependencies {
 	implementation 'org.apache.httpcomponents:httpclient:4.5.14'
 	implementation 'org.apache.commons:commons-lang3:3.18.0'
 
+	//랜덤 더미데이터
+	implementation 'net.datafaker:datafaker:2.0.2'
+
 	//oauth2
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 

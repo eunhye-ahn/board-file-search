@@ -46,7 +46,7 @@ public class AuthController {
     private final AuthService authService;
     //login
     @PostMapping("/api/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequestDto request,
+    public ResponseEntity<?> login(@Valid @RequestBody LoginRequestDto request,
                                    HttpServletRequest httpServletRequest) {
         //인증처리 서비스
         authService.login(request, httpServletRequest);
