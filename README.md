@@ -1,6 +1,34 @@
 # 게시판 CRUD 구현 정리
 
 ---
+## 흐름도
+
+- **QueryDSL**
+
+  ![](images/querydsl.drawio.png)
+
+---
+
+
+- **페이지네이션 offset**
+
+  ![](images/pagenation.drawio.png)
+
+---
+
+
+- **파일저장소**
+
+  ![](images/filestorage.drawio.png)
+
+
+---
+
+- **session 로그인**
+
+ ![](images/session.drawio.png)
+
+---
 ## 1. 기능 목록
 
 | 도메인 | 기능 |
